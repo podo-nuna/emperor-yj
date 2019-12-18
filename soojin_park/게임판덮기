@@ -1,0 +1,87 @@
+#include <iostream>
+#include <cstdio>
+using namespace std;
+
+int T, H, W;
+char map[21][21];
+
+int dx[4][2] = {
+	{1,0},
+	{0,1},
+	{1,1},
+	{1,1}
+};
+int dy[4][2] = {
+	{0,1},
+	{1,1},
+	{0,1},
+	{0,-1}
+};
+
+bool checkRange(int x, int y){
+	return x < H && y < W && x >= 0 && y >= 0 && map[x][y] == '.';
+}
+
+int coverMap(int cnt){
+	if (cnt % 3 != 0) {
+		return 0;
+	}
+	if (cnt == 0) {
+		return 1;
+	}
+	int x = -1, y = -1;
+	int ret = 0;
+
+	for (int i = 0; i < H; i++) {
+		for (int j = 0; j < W; j++) {
+			if (map[i][j] == '.') {
+				x = i; y = j;
+				break;
+			}
+		}
+		if (x != -1 && y != -1)
+			break;
+	}
+	map[x][y] = 'o';
+
+	for (int m = 0; m < 4; m++) {
+		if (checkRange(x+dx[m][0], y+dy[m][0]) && checkRange(x+dx[m][1], y+dy[m][1])) {
+			//덮기
+			map[x + dx[m][0]][y + dy[m][0]] = 'o';
+			map[x + dx[m][1]][y + dy[m][1]] = 'o';
+			//재귀 호출
+			ret += coverMap(cnt-3);
+			//복구
+			map[x + dx[m][0]][y + dy[m][0]] = '.';
+			map[x + dx[m][1]][y + dy[m][1]] = '.';
+		}
+	}
+	map[x][y] = '.';
+	return ret;
+}
+
+int main(void) {
+	scanf("%d", &T);
+
+	for (int t = 0; t < T; t++) {
+		scanf("%d %d", &H, &W);
+		getc(stdin);
+
+		int white_cnt = 0;
+
+		for (int i = 0; i < H; i++) {
+			for (int j = 0; j < W; j++) {
+				scanf("%c", &map[i][j]);
+				if (map[i][j] == '.') {
+					white_cnt++;
+				}
+			}
+			getc(stdin);
+		}
+
+		int ret = coverMap(white_cnt);
+		printf("%d\n", ret);
+	}
+	
+	return 0;
+}
