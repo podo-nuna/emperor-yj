@@ -1,0 +1,73 @@
+
+package study_2;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Scanner;
+   
+public class wildCardUsingMemoization {
+   static String W,filename;
+   static int C,n;
+   static ArrayList al = new ArrayList<String>();
+   static int cache[][];
+   static void main(String[] args) {
+      // TODO Auto-generated method stub
+	   Scanner scan = new Scanner(System.in);
+	   C = scan.nextInt();
+   
+	   while(C-->0) 
+	   {  
+		   al.clear();
+		   W = scan.next();
+		   n = scan.nextInt();
+		   cache = new int[101][101];
+		   
+		   for(int[] arr:cache)
+			   Arrays.fill(arr, -1);
+		   
+		   for(int i=0;i<n;i++) 
+		   {
+		      filename = scan.next();
+		     
+		      if(solve(0,0) == 1) 
+		         al.add(filename);
+		      }
+		 
+		   Collections.sort(al);
+		   
+		   for(int i=0;i<al.size();i++) 
+		   {
+			   System.out.println(al.get(i));
+		   }
+	   }
+   }
+   
+   public static int solve(int original, int compared) {
+      int position = 0;
+     
+      if(cache[original][compared] != -1)
+    	  return cache[original][compared];
+      
+      for(position=0;position<W.length()&&position<filename.length();position++) 
+      {
+    	  if(W.charAt(position)=='?' || W.charAt(position) == filename.charAt(position)) 
+    		  continue;
+    	  
+         else if(W.charAt(position) != filename.charAt(position)) 
+            break;
+      }
+ 
+      if(position == W.length()) 
+    	  return cache[original][compared]= (position == filename.length())?1:0;
+      
+      if(W.charAt(position) == '*') 
+      {
+         for(int add=0;position+add<=filename.length();add++) 
+         {
+            if(solve(position+1,position+add) == 1)
+               return cache[original][compared] = 1;
+         }
+      } 
+      return cache[original][compared] = 0;
+   }
+}
